@@ -2,8 +2,8 @@
 
 logname='MSIntune---Onboarding: '
 
-if [ "$EUID" -ne 0 ]
-  then echo "Please run this script as root"
+if [ "$EUID" -ne 0 ]; then 
+  echo "Please run this script as root"
   exit 1
 fi
 
@@ -24,7 +24,7 @@ fi
     logger -t $logname - Update the list of packages after we have added packages.microsoft.com
     apt update
 
-    logger -t $logname - Remove the repository & GPG key package (as we imported it above)
+    logger -t $logname - Remove the repository GPG key package
     rm packages-microsoft-prod.deb
 
     logger -t $logname - Install the Intune portal
