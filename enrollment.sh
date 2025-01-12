@@ -1,13 +1,12 @@
 #!/bin/bash
 
-logname='MSIntune---Onboarding: '
+logname='[Intune-Enrollment]'
 
 if [ "$EUID" -ne 0 ]; then 
-  echo "Please run this script as root"
+  echo -e "You are not running as the root user.  Please try again with root privileges"
   exit 1
 fi
 
-# Start of a bash "try-catch loop" that will safely exit the script if a command fails or causes an error. 
 (
     logger -t $logname - Set the error status
     set -e
@@ -35,8 +34,11 @@ fi
 
     logger -t $logname - Install Microsoft Edge
     apt install -y microsoft-edge-stable
+
+    logger -t $logname - Install Microsoft Defender for Endpoint
+    apt install -y mdatp
 )
-# Catch any necessary errors to prevent the program from improperly exiting. 
+
 ERROR_CODE=$?
 if [ $ERROR_CODE -ne 0 ]; then
     logger -t $logname - There was an error. Please restart the script or contact your admin if the error persists. - $ERROR_CODE
