@@ -7,35 +7,28 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
+verx=$(grep -oP '(?<=VERSION_ID=").*(?=")' /etc/os-release)
+
 (
     logger -t $logname - Set the error status
     set -e
 
-    logger -t $logname - Install pre-requisite packages
-    apt install -y wget apt-transport-https software-properties-common
+    logger -t $logname Install pre-requisite packages
+    apt install -y curl gpg wget apt-transport-https software-properties-common
 
-    logger -t $logname - Download the Microsoft repository and GPG keys
-    wget -q "https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb"
+    logger -t $logname Install Microsoft Edge Latest version
+    wget https://packages.microsoft.com/repos/edge/pool/main/m/microsoft-edge-stable/microsoft-edge-stable_131.0.2903.112-1_amd64.deb
+    sudo apt install -y ./microsoft-edge-stable_131.0.2903.112-1_amd64.deb
 
-    logger -t $logname - Register the Microsoft repository and GPG keys
-    dpkg -i packages-microsoft-prod.deb
-
-    logger -t $logname - Update the list of packages after we have added packages.microsoft.com
+    logger -t $logname Install Microsoft Intune app
+    curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
+    sudo install -o root -g root -m 644 microsoft.gpg /usr/share/keyrings/ 
+    sudo sh -c "echo \"deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/ubuntu/$verx/prod jammy main\" > /etc/apt/sources.list.d/microsoft-ubuntu-jammy-prod.list"
+    sudo rm microsoft.gpg
     apt update
-
-    logger -t $logname - Remove the repository GPG key package
-    rm packages-microsoft-prod.deb
-
-    logger -t $logname - Install the Intune portal
     apt install -y intune-portal
 
-    logger -t $logname - Enable the Edge browser repository
-    add-apt-repository "deb [arch=amd64] https://packages.microsoft.com/repos/edge stable main"
-
-    logger -t $logname - Install Microsoft Edge
-    apt install -y microsoft-edge-stable
-
-    logger -t $logname - Install Microsoft Defender for Endpoint
+    logger -t $logname Install Microsoft Defender for Endpoint
     apt install -y mdatp
 )
 
