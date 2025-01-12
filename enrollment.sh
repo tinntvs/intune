@@ -37,3 +37,4 @@ if [ $ERROR_CODE -ne 0 ]; then
     logger -t $logname - There was an error. Please restart the script or contact your admin if the error persists. - $ERROR_CODE
     exit $ERROR_CODE
 fi
+sudo init 6
