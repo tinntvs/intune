@@ -29,6 +29,8 @@ verx=$(grep -oP '(?<=VERSION_ID=").*(?=")' /etc/os-release)
     apt install -y intune-portal
 
     logger -t $logname Install Microsoft Defender for Endpoint
+    wget https://packages.microsoft.com/ubuntu/$verx/prod/pool/main/m/mde-netfilter/mde-netfilter_100.69.73_amd64.deb
+    apt install -y ./mde-netfilter_100.69.73_amd64.deb
     apt install -y mdatp
 )
 
